@@ -10,18 +10,24 @@ app.addResolver('/', (req, res) => {
   serveFromFS('./EZServer/html/home.html', res);
 });
 
-values = {};
+let values = {};
 
 app.rest.get('/api', (req, res) => {
   LOG('get:', req.url);
-  buildRes(res, `{value: ${values[req.url.substring(5)] || 'null'}}`, { code: 200, mime: 'application/json' });
+  let key = req.url.substring(5);
+  buildRes(res, `{value: ${values[key] || 'null'}}`, { code: 200, mime: 'application/json' });
 });
 
-app.rest.put('/api', (req, res) => {
+app.rest.put('/api', async (req, res) => {
   LOG('put:', req.url);
+
+  let key = req.url.substring(5);
+
+  let body;
+  await getBodyJSON(req, res).then((json) => {
+    body = json;
+  });
+
   let val;
-  let key = req.url.split('/');
-  key.shift();
-  key = key.join('/');
-  if (!!(val = getBodyJSON(req, res, ['value']))) values[key] = val;
+  if (!!(val = body.value)) values[key] = val;
 });
