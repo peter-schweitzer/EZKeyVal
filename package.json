@@ -7,6 +7,9 @@
   "keywords": [],
   "author": "peter-schweitzer",
   "license": "ISC",
+  "scripts": {
+    "start": "nohup node . < /dev/null &"
+  },
   "dependencies": {}
 }
 

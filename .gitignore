@@ -2,5 +2,8 @@
 node_modules/
 *-lock.json
 
+#start script
+nohup.out
+
 #TODO
 todo.md
