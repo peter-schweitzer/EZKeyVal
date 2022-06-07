@@ -1,13 +1,10 @@
 import { App, buildRes, serveFromFS } from './EZServer/EZServer.js';
-import { Module } from './EZServer/modules/index.js';
 
-import { REST, getBodyJSON } from './EZServer/modules/REST.js';
+import { getBodyJSON } from './EZServer/endpoints/REST.js';
 
 const LOG = console.log;
 
 const app = new App('1337');
-
-app.addModule(new Module('rest', REST));
 
 app.addResolver('/', (req, res) => {
   serveFromFS('./EZServer/html/home.html', res);
@@ -15,9 +12,9 @@ app.addResolver('/', (req, res) => {
 
 values = {};
 
-app.modules.rest.get('/api', (req, res) => {
+app.rest.get('/api', (req, res) => {
   LOG('get:', req.url);
-  buildRes(res, `{value: ${values[req.url.split('/api')[1]] || 'null'}}`, { code: 200, mime: 'application/json' });
+  buildRes(res, `{value: ${values[req.url.substring(5)] || 'null'}}`, { code: 200, mime: 'application/json' });
 });
 
 app.rest.put('/api', (req, res) => {
@@ -28,4 +25,3 @@ app.rest.put('/api', (req, res) => {
   key = key.join('/');
   if (!!(val = getBodyJSON(req, res, ['value']))) values[key] = val;
 });
-
