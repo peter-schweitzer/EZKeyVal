@@ -5,5 +5,8 @@ node_modules/
 #start script
 nohup.out
 
+#dont leak your k-v-pairs man
+data.json
+
 #TODO
 todo.md
