@@ -13,21 +13,33 @@ app.addResolver('/', (req, res) => {
 let values = {};
 
 app.rest.get('/api', (req, res) => {
-  LOG('get:', req.url);
+  LOG('\n> GET:\n-------');
+  LOG(' ip:', req.socket.remoteAddress);
+
   let key = req.url.substring(5);
-  buildRes(res, `{value: ${values[key] || 'null'}}`, { code: 200, mime: 'application/json' });
+  LOG('key:', key);
+
+  let val;
+  LOG('val:', (val = values[key] || null));
+
+  buildRes(res, JSON.stringify({ value: val }), { code: 200, mime: 'application/json' });
 });
 
 app.rest.put('/api', async (req, res) => {
-  LOG('put:', req.url);
+  LOG('\n> PUT:\n-------');
+  LOG(' ip:', req.socket.remoteAddress);
 
   let key = req.url.substring(5);
+  LOG('key:', key);
 
-  let body;
-  await getBodyJSON(req, res).then((json) => {
-    body = json;
-  });
+  let { json, http_code } = await getBodyJSON(req);
 
-  let val;
-  if (!!(val = body.value)) values[key] = val;
+  let val = values[key];
+  LOG('old val:', val);
+
+  if ((val = json.value) !== undefined) ((values[key] = val) || true) && LOG('new val:', val);
+  else !(http_code = 0) && LOG('VALUE UNCHANGED');
+
+  res.writeHead(http_code).end();
 });
+
