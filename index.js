@@ -3,9 +3,11 @@ import { readFileSync, writeFileSync } from 'fs';
 import { App, buildRes, serveFromFS } from './EZServer/EZServer.js';
 import { getBodyJSON } from './EZServer/endpoints/REST.js';
 
+import { port, route } from './config.json' assert { type: 'json' };
+
 const LOG = console.log;
 
-const app = new App('1337');
+const app = new App(port);
 
 let data_from_FS = '{}';
 try {
@@ -25,7 +27,7 @@ app.addResolver('/', (req, res) => {
   serveFromFS('./EZServer/html/home.html', res);
 });
 
-app.rest.get('/api', (req, res) => {
+app.rest.get(route, (req, res) => {
   LOG('\n> GET:\n-------');
   LOG(' ip:', req.socket.remoteAddress);
 
@@ -38,7 +40,7 @@ app.rest.get('/api', (req, res) => {
   buildRes(res, JSON.stringify({ value: val }), { code: 200, mime: 'application/json' });
 });
 
-app.rest.put('/api', async (req, res) => {
+app.rest.put(route, async (req, res) => {
   LOG('\n> PUT:\n-------');
   LOG(' ip:', req.socket.remoteAddress);
 
