@@ -2,10 +2,8 @@
 node_modules/
 *-lock.json
 
-#start script
+#dont leak your shit man
 nohup.out
-
-#dont leak your k-v-pairs man
 data.json
 
 #TODO
