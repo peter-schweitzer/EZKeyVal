@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "EZKeyValue",
   "main": "index.js",
-  "type": "module",
   "keywords": [],
   "author": "peter-schweitzer",
   "license": "ISC",

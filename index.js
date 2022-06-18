@@ -1,9 +1,9 @@
-import { readFileSync, writeFileSync } from 'fs';
+const { readFileSync, writeFileSync } = require('fs');
 
-import { App, buildRes, serveFromFS } from './EZServer/EZServer.js';
-import { getBodyJSON } from './EZServer/endpoints/REST.js';
+const { App, buildRes, serveFromFS } = require('./EZServer/EZServer');
+const { getBodyJSON } = require('./EZServer/endpoints/REST');
 
-import { port, route } from './config.json' assert { type: 'json' };
+const { port, route } = require('./config.json');
 
 const LOG = console.log;
 
@@ -59,3 +59,4 @@ app.rest.put(route, async (req, res) => {
 
   res.writeHead(http_code).end();
 });
+
