@@ -31,7 +31,7 @@ app.rest.get(route, (req, res) => {
   LOG('\n> GET:\n-------');
   LOG(' ip:', req.socket.remoteAddress);
 
-  let key = req.url.substring(5);
+  let key = req.url.substring(route.length + 1);
   LOG('key:', key);
 
   let val;
@@ -44,7 +44,7 @@ app.rest.put(route, async (req, res) => {
   LOG('\n> PUT:\n-------');
   LOG(' ip:', req.socket.remoteAddress);
 
-  let key = req.url.substring(5);
+  let key = req.url.substring(route.length + 1);
   LOG('key:', key);
 
   let { json, http_code } = await getBodyJSON(req);
