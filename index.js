@@ -22,7 +22,7 @@ let values = await new Promise((resolve, reject) => {
 const app = new App(port);
 
 app.addResolver('/', (req, res) => {
-  serveFromFS('./EZServer/html/home.html', res);
+  serveFromFS(res, './EZServer/html/home.html');
 });
 
 app.endpoints.add(route, (req, res) => {
