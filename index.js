@@ -3,20 +3,20 @@ const { readFileSync, writeFileSync } = require('fs');
 const { App, buildRes, serveFromFS } = require('./EZServer/EZServer');
 const { getBodyJSON } = require('./EZServer/endpoints/REST');
 
-const { port, route } = require('./config.json');
+const { port, route, dataPath } = require('./config.json');
 
 const LOG = console.log;
 
 /** @returns {void} */
 function saveToFS() {
-  writeFileSync('./data.json', JSON.stringify(values), { encoding: 'utf8', flag: 'w' });
+  writeFileSync(dataPath, JSON.stringify(values), { encoding: 'utf8', flag: 'w' });
 }
 
 let data_from_FS = '{}';
 try {
   data_from_FS = readFileSync('./data.json', { encoding: 'utf8' });
 } catch (e) {
-  console.warn('Error while reading data.json', e);
+  console.warn(`Error while reading ${dataPath}:`, e);
 }
 
 let values = JSON.parse(data_from_FS);
