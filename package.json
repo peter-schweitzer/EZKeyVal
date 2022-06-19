@@ -7,7 +7,8 @@
   "author": "peter-schweitzer",
   "license": "ISC",
   "scripts": {
-    "start": "nohup node . < /dev/null &"
+    "start": "nohup node . < /dev/null &",
+    "start:log": "./log_helper.sh && npm run start"
   },
   "dependencies": {}
 }
