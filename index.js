@@ -27,6 +27,10 @@ app.addResolver('/', (req, res) => {
   serveFromFS('./EZServer/html/home.html', res);
 });
 
+app.endpoints.add(route, (req, res) => {
+  buildRes(res, 'Bad Request\nmight use unsupported method', { code: 400, mime: 'text/plain' });
+});
+
 app.rest.get(route, (req, res) => {
   LOG('\n> GET:\n-------');
   LOG(' ip:', req.socket.remoteAddress);
