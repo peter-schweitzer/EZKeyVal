@@ -7,7 +7,10 @@ const { port, route } = require('./config.json');
 
 const LOG = console.log;
 
-const app = new App(port);
+/** @returns {void} */
+function saveToFS() {
+  writeFileSync('./data.json', JSON.stringify(values), { encoding: 'utf8', flag: 'w' });
+}
 
 let data_from_FS = '{}';
 try {
@@ -18,10 +21,7 @@ try {
 
 let values = JSON.parse(data_from_FS);
 
-/** @returns {void} */
-function saveToFS() {
-  writeFileSync('./data.json', JSON.stringify(values), { encoding: 'utf8' });
-}
+const app = new App(port);
 
 app.addResolver('/', (req, res) => {
   serveFromFS('./EZServer/html/home.html', res);
