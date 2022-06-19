@@ -22,11 +22,11 @@ let values = await new Promise((resolve, reject) => {
 const app = new App(port);
 
 app.addResolver('/', (req, res) => {
-  serveFromFS('./EZServer/html/home.html', res);
+  serveFromFS(res, './EZServer/html/home.html');
 });
 
 app.endpoints.add(route, (req, res) => {
-  buildRes(res, 'Bad Request\nmight use unsupported method', { code: 400, mime: 'text/plain' });
+  buildRes(res, { code: 400, mime: 'text/plain' }, 'Bad Request\nmight use unsupported method');
 });
 
 app.rest.get(route, (req, res) => {
@@ -39,7 +39,7 @@ app.rest.get(route, (req, res) => {
   let val;
   LOG('val:', (val = values[key] || null));
 
-  buildRes(res, JSON.stringify({ value: val }), { code: 200, mime: 'application/json' });
+  buildRes(res, { code: 200, mime: 'application/json' }, JSON.stringify({ value: val }));
 });
 
 app.rest.put(route, async (req, res) => {
@@ -59,6 +59,6 @@ app.rest.put(route, async (req, res) => {
 
   saveToFS();
 
-  res.writeHead(http_code).end();
+  buildRes(res, { code: http_code });
 });
 
