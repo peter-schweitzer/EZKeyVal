@@ -2,12 +2,22 @@
 
 This repo is a simple key-value (values can be any valid json) store using the [EZServer template](https://github.com/peter-schweitzer/EZServer)
 
+## Config
+
+default settings
+
+| key      | default value   | description                                                               |
+| -------- | --------------- | ------------------------------------------------------------------------- |
+| port     | `"1337"`        | the port the server will be listening on                                  |
+| route    | `"/api"`        | the route of the endpoint                                                 |
+| dataPath | `"./data.json"` | the path to where EZKeyVal will save the key-value-pairs (as json-string) |
+
 ## Route-Key relation
 
 you can define the endpoint route in the config.json
 
-you access a key by appending it to the URL
-like this: `route/of/the/endpoint/key-you-want-to-access`
+you access a key by appending it to the URL of the server
+like this: `server.url/route/of/the/endpoint/key-you-want-to-access`
 
 ## Usage
 
@@ -26,11 +36,11 @@ you can retreive values by sending a http request to [a route](#route-key-relati
 #### Request:
 
 - method: 'GET'
-- body: wont be checked
+- body: is ignored
 
 #### Response:
 
-- a json-string (where the key `value` contains the value) with code 200
+- a json response where the "value" contains the value (e.g. "{"value":value-of-the-key}") with code 200s
 
 ### Setting Values
 
@@ -47,4 +57,7 @@ you can save/overwrite values by sending a http request to [a route](#route-key-
 
 ### Invalid Requests
 
-- returns an empty response with code 404
+- returns an empty response with code 400
+
+<!--the request body for getting & setting values could be used for authentication-->
+
