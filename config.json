@@ -1,1 +1,2 @@
-{ "port": "1337", "route": "/api" }
+{ "port": "1337", "route": "/api", "dataPath": "./data.json" }
+
