@@ -1,7 +1,6 @@
 const { readFile, writeFileSync } = require('fs');
 
-const { App, buildRes, serveFromFS } = require('./EZServer/EZServer');
-const { getBodyJSON } = require('./EZServer/endpoints/REST');
+const { App, buildRes, serveFromFS, getBodyJSON } = require('@peter-schweitzer/ezserver');
 
 const { port, route, dataPath } = require('./config.json');
 

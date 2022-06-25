@@ -10,6 +10,7 @@
     "start": "nohup node . < /dev/null &",
     "start:log": "./log_helper.sh && npm run start"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@peter-schweitzer/ezserver": "^1.0.2"
+  }
 }
-
