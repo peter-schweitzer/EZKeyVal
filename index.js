@@ -1,4 +1,4 @@
-const { readFile, writeFileSync } = require('fs');
+const { readFileSync, writeFileSync, existsSync, lstatSync } = require('fs');
 
 const { App, buildRes, serveFromFS, getBodyJSON } = require('@peter-schweitzer/ezserver');
 
@@ -13,11 +13,18 @@ function saveToFS() {
   writeFileSync(dataPath, JSON.stringify(values), { encoding: 'utf8', flag: 'w' });
 }
 
-let values = await new Promise((resolve, reject) => {
-  readFile(dataPath, { encoding: 'utf8' }, (err, data) => {
-    resolve(err ? WARN('Error while reading data.json', e) || {} : JSON.parse(data));
-  });
-});
+/** @returns {Object<string, any>} */
+function readFromFS() {
+  return (
+    (!existsSync(dataPath)
+      ? ERR("path doesn't exist", dataPath)
+      : !lstatSync(dataPath).isFile()
+      ? ERR('path is not a file', dataPath)
+      : JSON.parse(readFileSync(dataPath) || WARN('file is empty', dataPath) || '{}')) || {}
+  );
+}
+
+let values = readFromFS();
 
 const app = new App(port);
 
