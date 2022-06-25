@@ -6,6 +6,7 @@ const { port, route, dataPath } = require('./config.json');
 
 const LOG = console.log;
 const WARN = console.warn;
+const ERR = console.error;
 
 /** @returns {void} */
 function saveToFS() {
