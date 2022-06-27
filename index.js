@@ -1,30 +1,43 @@
-const { readFileSync, writeFileSync, existsSync, lstatSync } = require('fs');
+const { readFileSync, writeFile, existsSync, lstatSync } = require('fs');
 
 const { App, buildRes, serveFromFS, getBodyJSON } = require('@peter-schweitzer/ezserver');
 
-const { port, route, dataPath } = require('./config.json');
+const { port, route, dataPath, aggressiveSync, syncInterval } = require('./config.json');
 
 const LOG = console.log;
 const WARN = console.warn;
 const ERR = console.error;
 
+let values = {};
+
 /** @returns {void} */
-function saveToFS() {
-  writeFileSync(dataPath, JSON.stringify(values), { encoding: 'utf8', flag: 'w' });
+function writeToFS() {
+  try {
+    writeFile(dataPath, JSON.stringify(values), { encoding: 'utf8', flag: 'w' }).catch;
+  } catch (err) {
+    ERR('unable to sync to FS', err);
+  }
 }
 
 /** @returns {Object<string, any>} */
 function readFromFS() {
-  return (
-    (!existsSync(dataPath)
+  try {
+    return !existsSync(dataPath)
       ? ERR("path doesn't exist", dataPath)
       : !lstatSync(dataPath).isFile()
       ? ERR('path is not a file', dataPath)
-      : JSON.parse(readFileSync(dataPath) || WARN('file is empty', dataPath) || '{}')) || {}
-  );
+      : JSON.parse(readFileSync(dataPath));
+  } catch (error) {
+    return ERR(`error while parsing ${dataPath}`, dataPath) || values;
+  }
 }
 
-let values = readFromFS();
+values = readFromFS();
+
+if (!aggressiveSync)
+  setInterval(() => {
+    values = readFromFS();
+  }, syncInterval);
 
 const app = new App(port);
 
@@ -37,6 +50,7 @@ app.endpoints.add(route, (req, res) => {
 });
 
 app.rest.get(route, (req, res) => {
+  if (aggressiveSync) values = readFromFS();
   LOG('\n> GET:\n-------');
   LOG(' ip:', req.socket.remoteAddress);
 
@@ -64,8 +78,7 @@ app.rest.put(route, async (req, res) => {
   if ((val = json.value) !== undefined) ((values[key] = val) || true) && LOG('new val:', val);
   else !(http_code = 0) && LOG('VALUE UNCHANGED');
 
-  saveToFS();
+  writeToFS();
 
   res.writeHead(http_code).end();
 });
-
