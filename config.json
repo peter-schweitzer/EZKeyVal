@@ -1,1 +1,2 @@
-{ "port": "1337", "route": "/api", "dataPath": "./data.json", "aggressiveSync": false, "syncInterval": 900000 }
+{ "port": "1337", "route": "/api", "dataPath": "./data.json", "logging": true, "aggressiveSync": false, "syncInterval": 900000 }
+

@@ -2,7 +2,7 @@ const { readFileSync, writeFile, existsSync, lstatSync } = require('fs');
 
 const { App, buildRes, serveFromFS, getBodyJSON } = require('@peter-schweitzer/ezserver');
 
-const { port, route, dataPath, aggressiveSync, syncInterval } = require('./config.json');
+const { port, route, dataPath, logging = false, aggressiveSync = false, syncInterval = 900000 } = require('./config.json');
 
 const LOG = console.log;
 const WARN = console.warn;
@@ -22,22 +22,22 @@ function writeToFS() {
 /** @returns {Object<string, any>} */
 function readFromFS() {
   try {
-    return !existsSync(dataPath)
+    values = !existsSync(dataPath)
       ? ERR("path doesn't exist", dataPath)
       : !lstatSync(dataPath).isFile()
       ? ERR('path is not a file', dataPath)
       : JSON.parse(readFileSync(dataPath));
   } catch (error) {
-    return ERR(`error while parsing ${dataPath}`, dataPath) || values;
+    values = ERR(`error while parsing ${dataPath}`, dataPath) || values;
   }
 }
 
-values = readFromFS();
+function logInteraction(a, m, k, v, n = null) {
+  LOG(`ip: ${a} | method: ${m} | key: ${k} | value: ${v}${n !== null ? ` | [new value]: ${n}` : ''}`);
+}
 
-if (!aggressiveSync)
-  setInterval(() => {
-    values = readFromFS();
-  }, syncInterval);
+readFromFS();
+if (!aggressiveSync) setInterval(readFromFS, syncInterval);
 
 const app = new App(port);
 
@@ -50,35 +50,26 @@ app.endpoints.add(route, (req, res) => {
 });
 
 app.rest.get(route, (req, res) => {
+  const val = values[key] || null;
+  const key = req.url.substring(route.length + 1);
+
   if (aggressiveSync) values = readFromFS();
-  LOG('\n> GET:\n-------');
-  LOG(' ip:', req.socket.remoteAddress);
-
-  let key = req.url.substring(route.length + 1);
-  LOG('key:', key);
-
-  let val;
-  LOG('val:', (val = values[key] || null));
 
   buildRes(res, JSON.stringify({ value: val }), { code: 200, mime: 'application/json' });
+
+  logging && logInteraction(log_msg, req.socket.remoteAddress, 'GET', key, val);
 });
 
 app.rest.put(route, async (req, res) => {
-  LOG('\n> PUT:\n-------');
-  LOG(' ip:', req.socket.remoteAddress);
+  const old_val = values[key];
 
-  let key = req.url.substring(route.length + 1);
-  LOG('key:', key);
+  const key = req.url.substring(route.length + 1);
+  const { json, http_code } = await getBodyJSON(req);
 
-  let { json, http_code } = await getBodyJSON(req);
-
-  let val = values[key];
-  LOG('old val:', val);
-
-  if ((val = json.value) !== undefined) ((values[key] = val) || true) && LOG('new val:', val);
-  else !(http_code = 0) && LOG('VALUE UNCHANGED');
+  values[key] = json.value || old_val;
+  res.writeHead(http_code).end();
 
   writeToFS();
-
-  res.writeHead(http_code).end();
+  logging && logInteraction(log_msg, req.socket.remoteAddress, 'PUT', key, old_val, values[key]);
 });
+
