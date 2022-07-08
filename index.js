@@ -2,7 +2,14 @@ const { readFileSync, writeFile, existsSync, lstatSync } = require('fs');
 
 const { App, buildRes, serveFromFS, getBodyJSON } = require('@peter-schweitzer/ezserver');
 
-const { port, route, dataPath, logging = false, aggressiveSync = false, syncInterval = 900000 } = require('./config.json');
+const {
+  port = '1337',
+  route = '/route/not/configured',
+  dataPath = './DATAPATH_NOT_CONFIGURED.json',
+  logging = false,
+  aggressiveSync = false,
+  syncInterval = 900000,
+} = require('./config.json');
 
 const LOG = console.log;
 const WARN = console.warn;
@@ -32,8 +39,8 @@ function readFromFS() {
   }
 }
 
-function logInteraction(a, m, k, v, n = null) {
-  LOG(`ip: ${a} | method: ${m} | key: ${k} | value: ${v}${n !== null ? ` | [new value]: ${n}` : ''}`);
+function logInteraction(a, m, k, o, n = null) {
+  LOG(`address: ${a} | method: ${m} | key: ${k} | old value: ${o}` + `${n === null ? '' : ` | new value: ${n}`}`);
 }
 
 readFromFS();
