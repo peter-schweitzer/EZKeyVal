@@ -50,7 +50,7 @@ app.endpoints.add(route, (req, res) => {
 });
 
 app.rest.get(route, (req, res) => {
-  const val = values[key] || null;
+  const val = values[key];
   const key = req.url.substring(route.length + 1);
 
   if (aggressiveSync) values = readFromFS();
