@@ -5,6 +5,8 @@ node_modules/
 #dont leak your shit man
 nohup.out
 data.json
+logs/*
+!logs/DELETEME
 
 #TODO
 todo.md
