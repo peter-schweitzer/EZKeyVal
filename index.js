@@ -35,7 +35,7 @@ function readFromFS() {
       ? ERR('path is not a file', dataPath)
       : JSON.parse(readFileSync(dataPath));
   } catch (error) {
-    values = ERR(`error while parsing ${dataPath}`, dataPath) || values;
+    ERR(`error while parsing ${dataPath}`, dataPath);
   }
 }
 
@@ -79,4 +79,3 @@ app.rest.put(route, async (req, res) => {
   writeToFS();
   logging && logInteraction(log_msg, req.socket.remoteAddress, 'PUT', key, old_val, values[key]);
 });
-
