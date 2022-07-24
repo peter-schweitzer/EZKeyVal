@@ -5,7 +5,7 @@ const { App, buildRes, serveFromFS, getBodyJSON } = require('@peter-schweitzer/e
 const {
   port = '1337',
   route = '/route/not/configured',
-  dataPath = './DATAPATH_NOT_CONFIGURED.json',
+  dataPath = 'DATAPATH_NOT_CONFIGURED',
   logging = false,
   aggressiveSync = false,
   syncInterval = 900000,
@@ -44,7 +44,7 @@ function readFromFS() {
 }
 
 function logInteraction(a, m, k, o, n = null) {
-  LOG(`address: ${a} | method: ${m} | key: ${k} | old value: ${o}` + `${n === null ? '' : ` | new value: ${n}`}`);
+  LOG(`address: ${a} | method: ${m} | key: ${k} | (old) value: ${o}` + `${n === null ? '' : ` | new value: ${n}`}`);
 }
 
 readFromFS();
@@ -53,7 +53,7 @@ if (!aggressiveSync) setInterval(readFromFS, syncInterval);
 const app = new App(port);
 
 app.addResolver('/', (req, res) => {
-  serveFromFS(res, './EZServer/html/home.html');
+  serveFromFS('./html/home.html', res);
 });
 
 app.endpoints.add(route, (req, res) => {
@@ -61,14 +61,14 @@ app.endpoints.add(route, (req, res) => {
 });
 
 app.rest.get(route, (req, res) => {
-  const val = values[key];
   const key = req.url.substring(route.length + 1);
+  const val = values[key];
 
   if (aggressiveSync) values = readFromFS();
 
   buildRes(res, JSON.stringify({ value: val }), { code: 200, mime: 'application/json' });
 
-  logging && logInteraction(log_msg, req.socket.remoteAddress, 'GET', key, val);
+  logging && logInteraction(req.socket.remoteAddress, 'GET', key, val);
 });
 
 app.rest.put(route, async (req, res) => {
@@ -81,6 +81,6 @@ app.rest.put(route, async (req, res) => {
   res.writeHead(http_code).end();
 
   writeToFS();
-  logging && logInteraction(log_msg, req.socket.remoteAddress, 'PUT', key, old_val, values[key]);
+  logging && logInteraction(req.socket.remoteAddress, 'PUT', key, old_val, values[key]);
 });
 
