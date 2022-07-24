@@ -11,6 +11,6 @@
     "start:log": "./log_helper.sh && npm run start"
   },
   "dependencies": {
-    "@peter-schweitzer/ezserver": "^1.0.3"
+    "@peter-schweitzer/ezserver": "^1.2.0"
   }
 }

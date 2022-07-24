@@ -53,7 +53,7 @@ if (!aggressiveSync) setInterval(readFromFS, syncInterval);
 const app = new App(port);
 
 app.addResolver('/', (req, res) => {
-  serveFromFS('./html/home.html', res);
+  serveFromFS(res, './html/home.html');
 });
 
 app.endpoints.add(route, (req, res) => {
