@@ -26,16 +26,20 @@ function writeToFS() {
   }
 }
 
-/** @returns {Object<string, any>} */
 function readFromFS() {
+  let vals;
   try {
-    values = !existsSync(dataPath)
+    vals = !existsSync(dataPath)
       ? ERR("path doesn't exist", dataPath)
       : !lstatSync(dataPath).isFile()
       ? ERR('path is not a file', dataPath)
       : JSON.parse(readFileSync(dataPath));
   } catch (error) {
     ERR(`error while parsing ${dataPath}`, dataPath);
+  }
+
+  for (const key in vals) {
+    values[key] = vals[key];
   }
 }
 
@@ -79,3 +83,4 @@ app.rest.put(route, async (req, res) => {
   writeToFS();
   logging && logInteraction(log_msg, req.socket.remoteAddress, 'PUT', key, old_val, values[key]);
 });
+
