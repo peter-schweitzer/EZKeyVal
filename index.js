@@ -7,7 +7,9 @@ const {
   route = '/route/not/configured',
   dataPath = 'DATAPATH_NOT_CONFIGURED',
   logging = false,
+  DEBUG_ROUTS_ENABLED = false,
   aggressiveSync = false,
+  noSync = false,
   syncInterval = 900000,
 } = require('./config.json');
 
@@ -48,7 +50,7 @@ function logInteraction(a, m, k, o, n = null) {
 }
 
 readFromFS();
-if (!aggressiveSync) setInterval(readFromFS, syncInterval);
+if (!aggressiveSync && !noSync) setInterval(readFromFS, syncInterval);
 
 const app = new App(port);
 
@@ -56,9 +58,25 @@ app.addResolver('/', (req, res) => {
   serveFromFS(res, './html/home.html');
 });
 
-app.endpoints.add(route, (req, res) => {
+app.endpoints.add(route + '/ezkv', (req, res) => {
   buildRes(res, 'Bad Request\nmight use unsupported method', { code: 400, mime: 'text/plain' });
 });
+
+if (DEBUG_ROUTS_ENABLED) {
+  app.addResolver(route + '/debug/load', (req, res) => {
+    buildRes(res, 'resyncing data', { code: 200, mime: 'text/plain' });
+    readFromFS();
+  });
+
+  app.addResolver(route + '/debug/data', (req, res) => {
+    serveFromFS(res, dataPath);
+  });
+
+  app.addResolver(route + '/debug/dump', (req, res) => {
+    WARN('dump', values);
+    buildRes(res, JSON.stringify(values), { code: 200, mime: 'application/json' });
+  });
+}
 
 app.rest.get(route, (req, res) => {
   const key = req.url.substring(route.length + 1);
